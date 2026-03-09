@@ -1,113 +1,69 @@
 import java.util.Scanner;
-import java.util.Stack;
 
-class PalindromeCheckerApp {
+class main{
 
-    // Strategy Interface
-    interface PalindromeStrategy {
-        boolean check(String input);
+    // Approach 1: Reverse String Method
+    public static boolean isPalindromeReverse(String str) {
+        String reversed = new StringBuilder(str).reverse().toString();
+        return str.equals(reversed);
     }
 
-    // Two Pointer Strategy (Optimized)
-    static class TwoPointerStrategy implements PalindromeStrategy {
+    // Approach 2: Two-Pointer Method
+    public static boolean isPalindromeTwoPointer(String str) {
+        int left = 0;
+        int right = str.length() - 1;
 
-        @Override
-        public boolean check(String input) {
+        while (left < right) {
+            if (str.charAt(left) != str.charAt(right))
+                return false;
+            left++;
+            right--;
+        }
+        return true;
+    }
 
-            if (input == null) return false;
-
-            int start = 0;
-            int end = input.length() - 1;
-
-            while (start < end) {
-                if (input.charAt(start) != input.charAt(end)) {
-                    return false;
-                }
-                start++;
-                end--;
-            }
-
+    // Approach 3: Recursive Method
+    public static boolean isPalindromeRecursive(String str, int left, int right) {
+        if (left >= right)
             return true;
-        }
+        if (str.charAt(left) != str.charAt(right))
+            return false;
+        return isPalindromeRecursive(str, left + 1, right - 1);
     }
 
-    // Stack Strategy
-    static class StackStrategy implements PalindromeStrategy {
-
-        @Override
-        public boolean check(String input) {
-
-            if (input == null) return false;
-
-            Stack<Character> stack = new Stack<>();
-
-// Push characters into stack
-            for (char c : input.toCharArray()) {
-                stack.push(c);
-            }
-
-// Compare while popping
-            for (char c : input.toCharArray()) {
-                if (c != stack.pop()) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
-
-    // Context Class
-    static class PalindromeContext {
-
-        private PalindromeStrategy strategy;
-
-        public PalindromeContext(PalindromeStrategy strategy) {
-            this.strategy = strategy;
-        }
-
-        public void setStrategy(PalindromeStrategy strategy) {
-            this.strategy = strategy;
-        }
-
-        public boolean execute(String input) {
-            return strategy.check(input);
-        }
-    }
-
-    // Main Method
     public static void main(String[] args) {
-
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Choose Strategy:");
-        System.out.println("1. Two Pointer Strategy");
-        System.out.println("2. Stack Strategy");
-        System.out.print("Enter choice: ");
-
-        int choice = sc.nextInt();
-        sc.nextLine(); // consume newline
-
+        System.out.println("=== Palindrome Checker Performance Comparison ===");
         System.out.print("Enter a string: ");
         String input = sc.nextLine();
 
-        PalindromeStrategy strategy;
+        // Remove spaces & convert to lowercase for fair comparison
+        input = input.replaceAll("\\s+", "").toLowerCase();
 
-        if (choice == 1) {
-            strategy = new TwoPointerStrategy();
-        } else {
-            strategy = new StackStrategy();
-        }
+        // Reverse Method Timing
+        long start1 = System.nanoTime();
+        boolean result1 = isPalindromeReverse(input);
+        long end1 = System.nanoTime();
+        long time1 = end1 - start1;
 
-        PalindromeContext context = new PalindromeContext(strategy);
+        // Two Pointer Timing
+        long start2 = System.nanoTime();
+        boolean result2 = isPalindromeTwoPointer(input);
+        long end2 = System.nanoTime();
+        long time2 = end2 - start2;
 
-        boolean result = context.execute(input);
+        // Recursive Timing
+        long start3 = System.nanoTime();
+        boolean result3 = isPalindromeRecursive(input, 0, input.length() - 1);
+        long end3 = System.nanoTime();
+        long time3 = end3 - start3;
 
-        if (result) {
-            System.out.println("Is it a Palindrome? : true");
-        } else {
-            System.out.println("Is it a Palindrome? : false");
-        }
+        // Display Results
+        System.out.println("\n=== Results ===");
+        System.out.println("Reverse Method: " + result1 + " | Time: " + time1 + " ns");
+        System.out.println("Two-Pointer Method: " + result2 + " | Time: " + time2 + " ns");
+        System.out.println("Recursive Method: " + result3 + " | Time: " + time3 + " ns");
 
         sc.close();
     }
